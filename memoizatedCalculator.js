@@ -1,17 +1,19 @@
-// From Javascript the Good Parts -> Memoization
-var memoizatedCalculator = function (memo, recursiveExpression) {
+// A customized version inspired by 'Javascript the Good Parts' -> Memoization
+var memoizatedCalculator = function (memoizationDataStore, recursiveExpression) {
 
+    // recursiveExpression is a function representing the recursion needed to calculate a value for the input 'n'
     var numberOfInvocations = 0;
 
-    var calculateRecursiveExpression = function (n) {
+    var calculateRecursiveExpressionUsingMemoization = function (n) {
         numberOfInvocations += 1;
-        console.log("Invocations = " + numberOfInvocations);
+        // console.log("Invocations = " + numberOfInvocations);
 
-        var result = memo[n];
+        var result = memoizationDataStore[n];
         if (typeof result !== 'number') {
-            // This is what I don't get completely ...
-            result = recursiveExpression(calculateRecursiveExpression, n);
-            memo[n] = result;
+            // We use the recursive expression in conjunction with the cached stored values to calculate the final
+            // result for input 'n'
+            result = recursiveExpression(calculateRecursiveExpressionUsingMemoization, n);
+            memoizationDataStore[n] = result;
         }
 
         return result;
@@ -19,22 +21,26 @@ var memoizatedCalculator = function (memo, recursiveExpression) {
 
     return {
         calculate: function (n) {
-            return calculateRecursiveExpression(n);
+            return calculateRecursiveExpressionUsingMemoization(n);
         }
     };
 
 };
 
-var fibonacciCalculator = memoizatedCalculator([0,1], function (fibonacci, n) {
-    return fibonacci(n - 1) + fibonacci(n - 2)});
+var fibonacciCalculator = memoizatedCalculator([0, 1], function (fibonacci, n) {
+    return fibonacci(n - 1) + fibonacci(n - 2)
+});
 
 for (var i = 0; i <= 10; i += 1) {
     console.log('// ' + i + ': ' + fibonacciCalculator.calculate(i));
 }
 
-var factorialCalculator = memoizatedCalculator([1,1], function (factorial, n) {
-    return n * factorial(n-1)});
+var factorialCalculator = memoizatedCalculator([1, 1], function (factorial, n) {
+    return n * factorial(n - 1)
+});
 
 for (var i = 0; i <= 10; i += 1) {
     console.log('** ' + i + ': ' + factorialCalculator.calculate(i));
 }
+
+console.log('## ' + i + ': ' + factorialCalculator.calculate(10));
